@@ -17,7 +17,7 @@ export class ApiPhoto extends ApiBase {
         return this.processResponse<ApiFetchPhotoByIdResponse>(response);
     }
     async searchPhotos(param: ApiSearchPhotosRequest) {
-        const response = await this.apisauce.get<ApiGeneralResponse<ApiSearchPhotosResponse>>(`/photos`, param);
+        const response = await this.apisauce.get<ApiGeneralResponse<ApiSearchPhotosResponse>>(`/search/photos`, param);
         return this.processResponse<ApiSearchPhotosResponse>(response);
     }
 }

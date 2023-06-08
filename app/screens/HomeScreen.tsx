@@ -4,13 +4,12 @@ import { api } from "@services/api";
 import { ApiFetchPhotosResponse } from "@services/api/module/photo.types";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import { colors } from "@theme";
-import { useImageViewer } from "@utils/hooks";
+import { useDebounce, useImageViewer } from "@utils/hooks";
 import { deviceHeight, horizontalScale, verticalScale } from "@utils/metrics";
 import { observer } from "mobx-react-lite";
 import React, { FC, useEffect, useState } from "react";
-import { ActivityIndicator, RefreshControl, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, RefreshControl, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
 import FastImage from "react-native-fast-image";
-import { ImageSource } from "react-native-image-viewing/dist/@types";
 
 interface SearchPhotosParams {
   query: string
@@ -22,18 +21,51 @@ interface SearchPhotosParams {
 export const HomeScreen: FC<AppStackScreenProps<'Home'>> = observer(function HomeScreen(props) {
   const [photoList, setPhotoList] = useState<ApiFetchPhotosResponse[]>([])
   const [isLoading, setLoading] = useState<boolean>(false)
-  const { ImageViewer, setImageViewerList, setImageViewerVisible } = useImageViewer();
+  const { ImageViewer, setImageViewerList, setImageViewerVisible, setImageDetail } = useImageViewer();
   const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState<string>("")
+  const debouncedSearchTerm: string = useDebounce<string>(search, 500)
+  const [page, setPage] = useState<number>(1)
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
 
   useEffect(() => {
     _fetchPhotos()
   }, [])
 
+  useEffect(() => {
+    onSearch(debouncedSearchTerm)
+  }, [debouncedSearchTerm])
+
+  const showToast = (text: string) => {
+    ToastAndroid.showWithGravity(
+      text,
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
+  };
+
   const onRefresh = () => {
     _fetchPhotos()
   }
 
-  const _searchPhotos = async ({ query, order_by, page, per_page }: SearchPhotosParams) => {
+  const onSearch = (query: string) => {
+    setSearch(query)
+    if (query !== "") {
+      _searchPhotos({ query: query, page: 1 })
+    } else {
+      _fetchPhotos()
+    }
+  }
+
+  const onEndReached = () => {
+    if (search !== "") {
+      _searchPhotos({ query: search, page: page + 1 })
+    } else {
+      _fetchPhotos(page + 1)
+    }
+  }
+
+  const _searchPhotos = async ({ query, order_by = "relevant", page = 1, per_page = 20 }: SearchPhotosParams) => {
     setLoading(true)
     const res = await api.photo.searchPhotos({
       query: query,
@@ -43,42 +75,53 @@ export const HomeScreen: FC<AppStackScreenProps<'Home'>> = observer(function Hom
     })
 
     if (res.kind === "ok") {
-      setPhotoList(res.data as ApiFetchPhotosResponse[])
-      // console.log('success: ', res.data)
-      setLoading(false)
+      setPage(page)
 
-    } else {
-      // console.log("failed: ", res.message)
+      if (page > 1) {
+        setPhotoList([...photoList, ...res.data.results as ApiFetchPhotosResponse[]])
+      } else {
+        setPhotoList(res.data.results as ApiFetchPhotosResponse[])
+      }
       setLoading(false)
+      showToast("Success")
+    } else {
+      setLoading(false)
+      showToast(res.message[0])
     }
   }
 
-  const _fetchPhotos = async () => {
+  const _fetchPhotos = async (page: number = 1) => {
     setLoading(true)
-    const res = await api.photo.fetchPhotos({})
+    const res = await api.photo.fetchPhotos({ per_page: 20, page: page })
 
     if (res.kind === "ok") {
-      setPhotoList(res.data as ApiFetchPhotosResponse[])
-      // console.log('success: ', res.data)
+      setPage(page)
+      if (page > 1) {
+        setPhotoList([...photoList, ...res.data as ApiFetchPhotosResponse[]])
+      } else {
+        setPhotoList(res.data as ApiFetchPhotosResponse[])
+      }
       setLoading(false)
 
     } else {
-      // console.log("failed: ", res.message)
       setLoading(false)
+      showToast(res.message[0])
     }
   }
 
-  const onPressImage = (imgSource: ImageSource) => {
-    setImageViewerList([imgSource]);
+  const onPressImage = (item: ApiFetchPhotosResponse) => {
+    const source = { uri: item?.urls?.regular }
+    setImageViewerList([source]);
+    setImageDetail(item)
     setImageViewerVisible(true);
   }
 
   const renderItem: ListRenderItem<ApiFetchPhotosResponse> = ({ item, index }) => {
     return (
 
-      <TouchableOpacity onPress={() => onPressImage({ uri: item?.urls?.full })} activeOpacity={0.7} style={{ width: horizontalScale(110), height: verticalScale(110), marginTop: 5 }}>
+      <TouchableOpacity onPress={() => onPressImage(item)} activeOpacity={0.7} style={{ width: horizontalScale(110), height: verticalScale(110), marginTop: 5 }}>
         <ImageWrapper
-          source={{ uri: item?.urls?.full, priority: FastImage.priority.normal }}
+          source={{ uri: item?.urls?.thumb, priority: FastImage.priority.normal }}
           style={{ flex: 1 }}
           resizeMode={FastImage.resizeMode.cover}
         />
@@ -92,7 +135,7 @@ export const HomeScreen: FC<AppStackScreenProps<'Home'>> = observer(function Hom
       safeAreaEdges={["top", "bottom"]}
       backgroundColor={"white"}
     >
-      <View style={{ height: deviceHeight }}>
+      <View style={{ height: deviceHeight - 20 }}>
         <FlashList<ApiFetchPhotosResponse>
           numColumns={3}
           data={photoList}
@@ -103,14 +146,12 @@ export const HomeScreen: FC<AppStackScreenProps<'Home'>> = observer(function Hom
             />
           }
           onEndReachedThreshold={0.0001}
-          onEndReached={() => console.log("on end reached")}
+          onEndReached={onEndReached}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <TextInput
               placeholder={"Search your images"}
               placeholderTextColor={colors.palette.neutral500}
-              // secureTextEntry={isSecureTextEntry}
-              // editable={!disabled}
               style={{
                 flex: 1,
                 backgroundColor: "#efefef",
@@ -118,16 +159,18 @@ export const HomeScreen: FC<AppStackScreenProps<'Home'>> = observer(function Hom
                 paddingHorizontal: 20,
                 marginBottom: 10
               }}
-              onChangeText={(text) => _searchPhotos({ query: text })}>
+              onChangeText={(text) => setSearch(text)}>
             </TextInput>
           }
-          ListEmptyComponent={isLoading && <ActivityIndicator size={50} color={"red"} />}
+          ListFooterComponent={isLoading && <ActivityIndicator size={50} color={"red"} />}
           renderItem={renderItem}
           estimatedItemSize={288}
         />
 
       </View>
       <ImageViewer />
+
+
 
     </Screen>
   )

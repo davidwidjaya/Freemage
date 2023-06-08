@@ -12,3 +12,4 @@ const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 const moderateScale = (size: number, factor: number = 0.5) => size + (horizontalScale(size) - size) * factor;
 
 export { horizontalScale, verticalScale, moderateScale, deviceHeight, deviceWidth };
+

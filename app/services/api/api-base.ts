@@ -58,7 +58,6 @@ export class ApiBase {
         try {
             const rawData = response.data;
 
-            console.log('rawData: ', rawData)
             return { kind: "ok", data: rawData, message: rawData.errors }
         } catch (e) {
             if (__DEV__) {
