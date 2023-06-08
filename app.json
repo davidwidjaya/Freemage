@@ -1,9 +1,9 @@
 {
-  "name": "VVGProcurementEcosystem",
-  "displayName": "VVGProcurementEcosystem",
+  "name": "Freemage",
+  "displayName": "Freemage",
   "expo": {
-    "name": "VVGProcurementEcosystem",
-    "slug": "VVGProcurementEcosystem",
+    "name": "Freemage",
+    "slug": "Freemage",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon-all.png",

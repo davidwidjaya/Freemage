@@ -9,7 +9,7 @@ install! 'cocoapods', :deterministic_uuids => false
 
 production = ENV["PRODUCTION"] == "1"
 
-target 'VVGProcurementEcosystem' do
+target 'Freemage' do
   use_expo_modules!
   post_integrate do |installer|
     begin
@@ -34,7 +34,7 @@ target 'VVGProcurementEcosystem' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'VVGProcurementEcosystemTests' do
+  target 'FreemageTests' do
     inherit! :complete
     # Pods for testing
   end

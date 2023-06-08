@@ -11,5 +11,5 @@ function IgniteApp() {
   return <App hideSplashScreen={RNBootSplash.hide} />
 }
 
-AppRegistry.registerComponent("VVGProcurementEcosystem", () => IgniteApp)
+AppRegistry.registerComponent("Freemage", () => IgniteApp)
 export default App

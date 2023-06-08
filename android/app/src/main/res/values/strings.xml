@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">VVGProcurementEcosystem</string>
+    <string name="app_name">Freemage</string>
     <string moduleConfig="true" name="CodePushDeploymentKey">VKRtIxF8uGRESwYHDKKugJvrba0ecSED9nLXA</string>
 </resources>
