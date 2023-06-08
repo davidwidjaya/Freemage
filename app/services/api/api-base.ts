@@ -57,12 +57,14 @@ export class ApiBase {
         // transform the data into the format we are expecting
         try {
             const rawData = response.data;
-            return { kind: "ok", data: rawData.data, message: rawData.message }
+
+            console.log('rawData: ', rawData)
+            return { kind: "ok", data: rawData, message: rawData.errors }
         } catch (e) {
             if (__DEV__) {
                 console.tron.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
             }
-            return { kind: "bad-data", message: response?.data?.message || "" }
+            return { kind: "bad-data", message: response?.data?.errors || [] }
         }
     }
 }

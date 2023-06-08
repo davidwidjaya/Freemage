@@ -3,14 +3,11 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.12.10, 0.99.99]'
     }
 }
 
 apply plugin: 'kotlin-android'
 apply plugin: "com.android.application"
-apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
-apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os

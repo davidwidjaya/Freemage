@@ -11,12 +11,12 @@ import { useColorScheme } from "react-native"
 import Config from "../config"
 import { useStores } from "../models"
 import {
-  WelcomeScreen
+  HomeScreen
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
 
 export type AppStackParamList = {
-  Welcome: undefined
+  Home: undefined
 }
 
 const exitRoutes = Config.exitRoutes
@@ -34,9 +34,9 @@ const AppStack = observer(function AppStack() {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName={"Welcome"}
+      initialRouteName={"Home"}
     >
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} />
     </Stack.Navigator>
   )
 })

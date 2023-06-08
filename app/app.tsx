@@ -1,6 +1,5 @@
 
 import Config from "@config"
-import "@i18n"
 import { useInitialRootStore } from "@models"
 import { AppNavigator, useNavigationPersistence } from "@navigators"
 import { setupReactotron } from "@services/reactotron"

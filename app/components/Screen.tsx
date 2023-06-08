@@ -1,3 +1,6 @@
+import { useScrollToTop } from "@react-navigation/native"
+import { colors } from "@theme"
+import { StatusBar, StatusBarProps } from "expo-status-bar"
 import React, { useRef, useState } from "react"
 import {
   KeyboardAvoidingView,
@@ -10,10 +13,7 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import { StatusBar, StatusBarProps } from "expo-status-bar"
 import { Edge, SafeAreaView, SafeAreaViewProps } from "react-native-safe-area-context"
-import { useScrollToTop } from "@react-navigation/native"
-import { colors } from "@theme"
 
 interface BaseScreenProps {
   /**
@@ -232,6 +232,8 @@ const $safeAreaStyle: ViewStyle = {
   flex: 1,
   height: "100%",
   width: "100%",
+  paddingVertical: 10,
+  paddingHorizontal: 10,
 }
 
 const $keyboardAvoidingViewStyle: ViewStyle = {

@@ -16,7 +16,6 @@ import java.util.List;
 import android.content.res.Configuration;
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
-import com.microsoft.codepush.react.CodePush;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -39,11 +38,6 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         protected String getJSMainModuleName() {
           return "index";
-        }
-
-        @Override
-        protected String getJSBundleFile() {
-            return CodePush.getJSBundleFile();
         }
       });
 

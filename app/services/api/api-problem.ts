@@ -39,7 +39,7 @@ type ApiProblem<Tdatafailed> =
    */
   | { kind: "bad-data" }
 
-export type GeneralApiProblem<Tdatafailed> = ApiProblem<Tdatafailed> & { message?: string, data?: Tdatafailed }
+export type GeneralApiProblem<Tdatafailed> = ApiProblem<Tdatafailed> & { message?: string[], data?: Tdatafailed }
 
 /**
  * Attempts to get a common cause of problems from an api response.
@@ -61,26 +61,26 @@ export function getGeneralApiProblem<Tdatafailed>(response: ApiResponse<ApiGener
 
   switch (response.problem) {
     case "CONNECTION_ERROR":
-      return { kind: "cannot-connect", temporary: true, message: "" }
+      return { kind: "cannot-connect", temporary: true, message: [] }
     case "NETWORK_ERROR":
-      return { kind: "cannot-connect", temporary: true, message: "" }
+      return { kind: "cannot-connect", temporary: true, message: [] }
     case "TIMEOUT_ERROR":
-      return { kind: "timeout", temporary: true, message: "" }
+      return { kind: "timeout", temporary: true, message: [] }
     case "SERVER_ERROR":
-      return { kind: "server", message: "" }
+      return { kind: "server", message: [] }
     case "UNKNOWN_ERROR":
-      return { kind: "unknown", temporary: true, message: "" }
+      return { kind: "unknown", temporary: true, message: [] }
     case "CLIENT_ERROR":
       const { data } = response;
       switch (response.status) {
         case 401:
-          return { kind: "unauthorized", message: data.message }
+          return { kind: "unauthorized", message: data.errors }
         case 403:
-          return { kind: "forbidden", message: data.message }
+          return { kind: "forbidden", message: data.errors }
         case 404:
-          return { kind: "not-found", message: data.message }
+          return { kind: "not-found", message: data.errors }
         default:
-          return { kind: "rejected", message: data.message }
+          return { kind: "rejected", message: data.errors }
       }
     case "CANCEL_ERROR":
       return null
