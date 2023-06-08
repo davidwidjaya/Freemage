@@ -6,12 +6,6 @@
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
 export default {
-  API_URL: "CHANGEME",
-  SOCKETIO_URL: "",
-  SOCKETIO_PATH: "",
-  SOCKETIO_EVENT_PREFIX: "",
-  ONESIGNAL_ID: "",
+  API_URL: "https://api.unsplash.com/",
   REACTOTRON_HOST: "localhost",
-  ANDROID_STORE_URL: "",
-  IOS_STORE_URL: "",
 }

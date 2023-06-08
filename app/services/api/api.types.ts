@@ -29,25 +29,16 @@ export interface ApiGeneralResponse<T = any> {
  * API response shape when using pagination
  */
 export interface ApiPaginationResponse<T = any[]> {
-  current_page: number
-  data: T
-  first_page_url: string
-  from: number
-  last_page: number
-  last_page_url: string
-  links: { url: string | null, label: string, active: boolean }[]
-  next_page_url: string
-  path: string
-  per_page: string
-  prev_page_url: string | null
-  to: number
   total: number
+  total_pages: number
+  results: T
 }
 
 /**
  * Processed API response shape
  */
-export type ApiProcessedResponse<Tdata = any> = Promise<{ kind: "ok"; data: Tdata; message?: string } | GeneralApiProblem>
+
+export type ApiProcessedResponse<Tdata = any, Tdatafailed = any> = Promise<{ kind: "ok"; data: Tdata; message?: string } | GeneralApiProblem<Tdatafailed>>
 
 export interface ApiFeedResponse {
   status: string

@@ -1,7 +1,7 @@
-import { ApiResponse } from "apisauce"
+import { ApiResponse } from "apisauce";
 import { ApiGeneralResponse } from "./api.types";
 
-type ApiProblem =
+type ApiProblem<Tdatafailed> =
   /**
    * Times up.
    */
@@ -39,14 +39,26 @@ type ApiProblem =
    */
   | { kind: "bad-data" }
 
-export type GeneralApiProblem = ApiProblem & { message?: string }
+export type GeneralApiProblem<Tdatafailed> = ApiProblem<Tdatafailed> & { message?: string, data?: Tdatafailed }
 
 /**
  * Attempts to get a common cause of problems from an api response.
  *
  * @param response The api response.
  */
-export function getGeneralApiProblem(response: ApiResponse<ApiGeneralResponse>): GeneralApiProblem | void {
+export function getGeneralApiProblem<Tdatafailed>(response: ApiResponse<ApiGeneralResponse>): GeneralApiProblem<Tdatafailed> | void {
+  let data: any = null;
+  if (!!response.data) {
+    try {
+      data = response.data;
+      if (!!data) {
+        data = JSON.parse(data as unknown as string);
+      }
+    } catch (error) {
+
+    }
+  }
+
   switch (response.problem) {
     case "CONNECTION_ERROR":
       return { kind: "cannot-connect", temporary: true, message: "" }
@@ -74,5 +86,4 @@ export function getGeneralApiProblem(response: ApiResponse<ApiGeneralResponse>):
       return null
   }
 
-  return null
 }

@@ -52,26 +52,26 @@ export const useInitialRootStore = (callback: () => void | Promise<void>) => {
   const rootStore = useStores()
   const [rehydrated, setRehydrated] = useState(false)
 
-  // Kick off initial async loading actions, like loading fonts and rehydrating RootStore
+  
   useEffect(() => {
     let _unsubscribe
     ;(async () => {
-      // set up the RootStore (returns the state restored from AsyncStorage)
+      
       const { restoredState, unsubscribe } = await setupRootStore(rootStore)
       _unsubscribe = unsubscribe
 
-      // reactotron integration with the MST root store (DEV only)
+      
       setReactotronRootStore(rootStore, restoredState)
 
-      // let the app know we've finished rehydrating
+      
       setRehydrated(true)
 
-      // invoke the callback, if provided
+      
       if (callback) callback()
     })()
 
     return () => {
-      // cleanup
+      
       if (_unsubscribe) _unsubscribe()
     }
   }, [])
